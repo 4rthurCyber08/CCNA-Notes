@@ -334,7 +334,6 @@ conf t
   network 10.1.4.8 0.0.0.3
   exit
 
-	!name eigrp - not working. wala redistribution for named eigrp sa hayupLAB
 	@R4
 	sh ip route | inc C
 	conf t
@@ -453,6 +452,18 @@ sh int gi e1/2
 conf t
  router eigrp 100
   redistribute ospf 1 metric 10000 1000 255 1 1500
+  exit
+ router ospf 1
+  redistribute eigrp 100 subnets
+  exit
+
+	@R4
+	sh ip route
+	sh int gi e1/2
+	conf t
+	 router eigrp hayupLAB
+	  address-family ipv4 uni a 100
+	   redistribute ospf 1 metric 10000 1000 255 1 1500
   exit
  router ospf 1
   redistribute eigrp 100 subnets
