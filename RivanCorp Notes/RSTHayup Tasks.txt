@@ -516,6 +516,8 @@ conf t
   network 0.0.0.0
   exit 
  ip route 0.0.0.0 0.0.0.0 null 0
+
+!no need if you NAT
  ip route 10.0.0.0 255.0.0.0 208.8.8.1
 end
  
@@ -531,7 +533,7 @@ conf t
   neighbor 207.7.7.1 remote-as 1
   address-family ipv4
   neighbor 25.2.5.5 activate
-  neighbor 32.3.2.3 ctivate
+  neighbor 32.3.2.3 activate
   neighbor 24.2.4.4 activate
   neighbor 207.7.7.1 activate
   network 22.22.22.22 mask 255.255.255.255
@@ -542,6 +544,8 @@ conf t
   network 0.0.0.0
   exit
  ip route 0.0.0.0 0.0.0.0 null 0
+
+!no need if you NAT
  ip route 10.0.0.0 255.0.0.0 207.7.7.1
  do sh ip bgp
 
@@ -565,7 +569,10 @@ conf t
   network 0.0.0.0
   exit
  ip route 0.0.0.0 0.0.0.0 null 0
+
+!no need if you NAT
  ip route 10.0.0.0 255.0.0.0 209.9.9.1
+
  do sh ip bgp
 end
  
@@ -573,7 +580,7 @@ end
 sh ip route | inc C
 conf t
  router bgp 45
-  bgp router-id
+  bgp router-id 55.55.55.55
   bgp log-neighbor-changes
   neighbor 35.3.5.3 remote-as 3
   neighbor 25.2.5.2 remote-as 2
