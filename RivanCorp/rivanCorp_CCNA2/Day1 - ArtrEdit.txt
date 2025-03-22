@@ -393,7 +393,7 @@ conf t
   desc VIRTUALIP
  end
 
-@static route other monitors
+!@static routing
 conf t
  ip routing
  ip route 10.11.0.0 255.255.0.0 200.0.0.11
@@ -420,10 +420,31 @@ route  add   10.0.0.0   mask   255.0.0.0    10.#$3AT#.1.4
 route  add  200.0.0.0   mask  255.255.255.0   10.#$3AT#.1.4
  
 
- 
-  
- 
+===========================================
 
+!OSPF routing
+!@edge
+conf t
+router ospf 1
+router-id #$3AT#.0.0.1
+network 200.0.0.0 0.0.0.255 area 0
+network 10.#$3AT#.#$3AT#.0 0.0.0.255 area 0
+network #$3AT#.0.0.1 0.0.0.0 area 0
+int gi 0/0/0
+ip ospf network point-to-point
+end
 
- 
+@coreBaba
+conf t
+router ospf 1
+router-id 10.#$3AT#.#$3AT#.4
+network 10.#$3AT#.0.0 0.0.255.255 area 0
+int gi 0/1
+ip ospf network point-to-point
 
+@cucm
+conf t
+router ospf 1
+router-id 10.#$3AT#.100.8
+network 10.#$3AT#.100.0 0.0.0.255 area 0
+end
