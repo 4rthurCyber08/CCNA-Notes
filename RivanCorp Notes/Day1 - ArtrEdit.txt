@@ -1,12 +1,41 @@
+FIND AND REPLACE THE FOLLOWING - From # to #
+
 ! Monitor Num:      #$3AT#
 ! Cam6 Mac Add:     #camera6macadd#
 ! Cam8 Mac Add:     #camera8macadd#
-! Ephone 1 Mac Add: #ephone1macadd#
-! Ephone 2 Mac Add: #ephone2macadd#
+! Ephone 1 Mac: 	#ephone1macadd#
+! Ephone 2 Mac: 	#ephone2macadd#
+! YourPhone Mac:	#mym0bilemac#
+! OtherPhone Mac:	#othm0bilemac#
 
+
+Know the following commands:
+ - SR:		show run
+ - SS:		show start
+ - CRS:		copy run start
+ - SPI:		show power inline
+ - SIIB:	show ip interface brief
+ - SVB:		show vlan brief
+ - SIDB:	show ip dhcp binding
+ - SMAC:	show mac address-table
+ - SVPS:	show voice port summary
+ - SDPVS:	show dial-peer voice summary
+ - CS:		csim start [potsnum]
+ 
+ *For Day 5
+ 
+ - SES:		show etherchannel summary
+ - SMT:		switchport mode trunk
+ - STED:	switchport trunk encapsulation dot1q
+ - STAV:	switchport trunk allowed vlan
+ - STNV:	switchport trunk native vlan
+
+ 
+************** Day 1 Configuration **************
+ 
 !@coreTaas
 conf t
- hostname coreTaas#$3AT#
+ hostname coreTaas-#$3AT#
  enable secret pass
  service password-encryption
  no logging console
@@ -39,7 +68,7 @@ conf t
 
 !@coreBaba
 conf t
- hostname coreBaba#$3AT#
+ hostname coreBaba-#$3AT#
  enable secret pass
  service password-encryption
  no logging console
@@ -106,8 +135,6 @@ conf t
 
 !@switchport
 conf t
- vlan 1
-  name MGMTVLAN
  vlan 10
   name WIFIVLAN
  vlan 50
@@ -155,12 +182,22 @@ conf t
 !@default route Corebaba
 conf t 
 ip routing
-ip route 0.0.0.0 0.0.0.0 10.#$3AT#.#$3AT#.1
+ip route 0.0.0.0 0.0.0.0 10.#$3AT#.#$3AT#.1 254
 end
+
+!@ospf routing corebaba
+conf t
+router ospf 1
+router-id 10.#$3AT#.#$3AT#.4
+network 10.#$3AT#.0.0 0.0.255.255 area 0
+int gi 0/1
+ip ospf network point-to-point
+end
+
 
 !@CUCM
 conf t
- hostname CUCM#$3AT#
+ hostname CUCM-#$3AT#
  enable secret pass
  service password-encryption
  no logging console
@@ -322,52 +359,20 @@ conf t
 !@default route CUCM
 conf t
  ip routing
- ip route 0.0.0.0 0.0.0.0 10.#$3AT#.100.4
+ ip route 0.0.0.0 0.0.0.0 10.#$3AT#.100.4 254
  end
- 
-!@IVRS
-config t
- dial-peer voice 69 voip
-  service rivanaa out-bound
-  destination-pattern #$3AT#69
-  session target ipv4:10.#$3AT#.100.8
-  incoming called-number #$3AT#69
-  dtmf-relay h245-alphanumeric
-  codec g711ulaw
-  no vad
- !
- telephony-service
-  moh "flash:/en_bacd_music_on_hold.au"
- !
- application
-  service rivanaa flash:app-b-acd-aa-3.0.0.2.tcl
-   paramspace english index 1        
-   param number-of-hunt-grps 2
-   param dial-by-extension-option 8
-   param handoff-string rivanaa
-   param welcome-prompt flash:en_bacd_welcome.au
-   paramspace english language en
-   param call-retry-timer 15
-   param service-name rivanqueue
-   paramspace english location flash:
-   param second-greeting-time 60
-   param max-time-vm-retry 2
-   param voice-mail 1234
-   param max-time-call-retry 700
-   param aa-pilot _69
-  service rivanqueue flash:app-b-acd-3.0.0.2.tcl
-   param queue-len 15
-   param aa-hunt1 #$3AT#00
-   param aa-hunt2 #$3AT#01
-   param aa-hunt3 #$3AT#77
-   param aa-hunt4 #$3AT#33
-   param queue-manager-debugs 1
-   param number-of-hunt-grps 4
-   end
+
+!@ospf routing cucm
+conf t
+router ospf 1
+router-id 10.#$3AT#.100.8
+network 10.#$3AT#.100.0 0.0.0.255 area 0
+end
+
 
 !@EDGE
 conf t
- hostname EDGE#$3AT#
+ hostname EDGE-#$3AT#
  enable secret pass
  service password-encryption
  no logging console
@@ -396,31 +401,42 @@ conf t
 !@static routing
 conf t
  ip routing
- ip route 10.11.0.0 255.255.0.0 200.0.0.11
- ip route 10.12.0.0 255.255.0.0 200.0.0.12
- ip route 10.21.0.0 255.255.0.0 200.0.0.21
- ip route 10.22.0.0 255.255.0.0 200.0.0.22
- ip route 10.31.0.0 255.255.0.0 200.0.0.31
- ip route 10.32.0.0 255.255.0.0 200.0.0.32
- ip route 10.41.0.0 255.255.0.0 200.0.0.41
- ip route 10.42.0.0 255.255.0.0 200.0.0.42
- ip route 10.51.0.0 255.255.0.0 200.0.0.51
- ip route 10.52.0.0 255.255.0.0 200.0.0.52
- ip route 10.61.0.0 255.255.0.0 200.0.0.61
- ip route 10.62.0.0 255.255.0.0 200.0.0.62
- ip route 10.71.0.0 255.255.0.0 200.0.0.71
- ip route 10.72.0.0 255.255.0.0 200.0.0.72
- ip route 10.81.0.0 255.255.0.0 200.0.0.81
- ip route 10.82.0.0 255.255.0.0 200.0.0.82
- ip route 10.#$3AT#.0.0 255.255.0.0 10.#$3AT#.#$3AT#.4
+ ip route 10.11.0.0 255.255.0.0 200.0.0.11 254
+ ip route 10.12.0.0 255.255.0.0 200.0.0.12 254
+ ip route 10.21.0.0 255.255.0.0 200.0.0.21 254
+ ip route 10.22.0.0 255.255.0.0 200.0.0.22 254
+ ip route 10.31.0.0 255.255.0.0 200.0.0.31 254
+ ip route 10.32.0.0 255.255.0.0 200.0.0.32 254
+ ip route 10.41.0.0 255.255.0.0 200.0.0.41 254
+ ip route 10.42.0.0 255.255.0.0 200.0.0.42 254
+ ip route 10.51.0.0 255.255.0.0 200.0.0.51 254
+ ip route 10.52.0.0 255.255.0.0 200.0.0.52 254
+ ip route 10.61.0.0 255.255.0.0 200.0.0.61 254
+ ip route 10.62.0.0 255.255.0.0 200.0.0.62 254
+ ip route 10.71.0.0 255.255.0.0 200.0.0.71 254
+ ip route 10.72.0.0 255.255.0.0 200.0.0.72 254
+ ip route 10.81.0.0 255.255.0.0 200.0.0.81 254
+ ip route 10.82.0.0 255.255.0.0 200.0.0.82 254
+ ip route 10.#$3AT#.0.0 255.255.0.0 10.#$3AT#.#$3AT#.4 254
  end
 
-!@cmd
+!@ospf routing edge
+conf t
+router ospf 1
+router-id #$3AT#.0.0.1
+network 200.0.0.0 0.0.0.255 area 0
+network 10.#$3AT#.#$3AT#.0 0.0.0.255 area 0
+network #$3AT#.0.0.1 0.0.0.0 area 0
+int gi 0/0/0
+ip ospf network point-to-point
+end
+
+!@windowsCMD
 route  add   10.0.0.0   mask   255.0.0.0    10.#$3AT#.1.4
 route  add  200.0.0.0   mask  255.255.255.0   10.#$3AT#.1.4
  
 
-===========================================
+************** OSPF Routing Only **************
 
 !OSPF routing
 !@edge
@@ -434,18 +450,115 @@ int gi 0/0/0
 ip ospf network point-to-point
 end
 
-@coreBaba
+!@coreBaba
 conf t
 router ospf 1
 router-id 10.#$3AT#.#$3AT#.4
 network 10.#$3AT#.0.0 0.0.255.255 area 0
 int gi 0/1
 ip ospf network point-to-point
+end
 
-@cucm
+!@cucm
 conf t
 router ospf 1
 router-id 10.#$3AT#.100.8
 network 10.#$3AT#.100.0 0.0.0.255 area 0
 end
- 
+
+
+************** Trunking and Etherchannel **************
+
+!@coreBaba, coreTaas
+conf t
+ int range fa0/10-12
+  switchport trunk encapsulation dot1q
+  switchport mode trunk
+  channel-group 1 mode active
+  channel-protocol lacp
+  end
+  
+
+************** VOIP Services **************
+
+!@cucm - Interactive Voice Response System
+config t
+dial-peer voice 69 voip
+ service rivanaa out-bound
+ destination-pattern #$3AT#69
+ session target ipv4:10.#$3AT#.100.1
+ incoming called-number #$3AT#69
+ dtmf-relay h245-alphanumeric
+ codec g711ulaw
+ no vad
+!
+telephony-service
+ moh "flash:/en_bacd_music_on_hold.au"
+!
+application
+ service rivanaa flash:app-b-acd-aa-3.0.0.2.tcl
+  paramspace english index 1        
+  param number-of-hunt-grps 2
+  param dial-by-extension-option 8
+  param handoff-string rivanaa
+  param welcome-prompt flash:en_bacd_welcome.au
+  paramspace english language en
+  param call-retry-timer 15
+  param service-name rivanqueue
+  paramspace english location flash:
+  param second-greeting-time 60
+  param max-time-vm-retry 2
+  param voice-mail 1234
+  param max-time-call-retry 700
+  param aa-pilot #$3AT#69
+ service rivanqueue flash:app-b-acd-3.0.0.2.tcl
+  param queue-len 15
+  param aa-hunt1 #$3AT#00
+  param aa-hunt2 #$3AT#77
+  param aa-hunt3 #$3AT#01
+  param aa-hunt4 #$3AT#33
+  param queue-manager-debugs 1
+  param number-of-hunt-grps 4
+  end
+
+
+!@cucm - Session Initiation Protocol
+conf t
+ voice service voip
+  allow-connections h323 to sip
+          
+  allow-connections sip to h323
+  allow-connections sip to sip
+  supplementary-service h450.12
+ sip
+   bind control source-interface fa0/0
+   bind media source-interface fa0/0
+   registrar server expires max 600 min 60
+ voice register global
+  mode cme
+  source-address 10.#$3AT#.100.1 port 5060
+  max-dn 12
+  max-pool 12
+  authenticate register
+  create profile sync syncinfo.xml
+ voice register dn 1
+   number #$3AT#23
+   allow watch
+   name #$3AT#23
+ voice register dn 2
+   number #$3AT#24
+   allow watch
+   name #$3AT#24
+  voice register pool 1
+    id mac #mym0bilemac#
+    number 1 dn 1
+    dtmf-relay sip-notify
+    username #$3AT#23 password #$3AT#23
+    codec g711ulaw
+  voice register pool 2
+    id mac #othm0bilemac#
+    number 1 dn 2
+    dtmf-relay sip-notify
+    username #$3AT#32 password #$3AT#32
+    codec g711ulaw
+	end
